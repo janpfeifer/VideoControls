@@ -5,13 +5,14 @@ import "fyne.io/fyne/app"
 import "fyne.io/fyne/widget"
 
 type ControlType int
+
 const (
 	CTBool ControlType = iota
 	CTInt
 )
 
 type Control struct {
-	name string
+	name  string
 	ctype ControlType
 
 	// maxValue is inclusive, should still be a valid value.
@@ -30,9 +31,19 @@ var testData DevicesMap = DevicesMap{
 	},
 }
 
+// UI holds all Fyne UI elements.
 type UI struct {
-	app fyne.App
-	win fyne.Window
+	app  fyne.App
+	win  fyne.Window
+	tabs *widget.TabContainer
+}
+
+func makeDeviceLayout(controls []*Control) fyne.Widget {
+	var parts []fyne.CanvasObject
+	for _, control := range controls {
+		parts = append(parts, widget.NewLabel(control.name))
+	}
+	return widget.NewVBox(parts...)
 }
 
 func NewUI(devices DevicesMap) *UI {
@@ -40,21 +51,21 @@ func NewUI(devices DevicesMap) *UI {
 	ui.app = app.New()
 	ui.win = ui.app.NewWindow("VideoController")
 
+	tabItems := make([]*widget.TabItem, 0, len(devices))
+	for devName, controls := range devices {
+		tab := widget.NewTabItem(devName, makeDeviceLayout(controls))
+		tabItems = append(tabItems, tab)
+	}
+	ui.tabs = widget.NewTabContainer(tabItems...)
+	ui.win.SetContent(ui.tabs)
 	return ui
 }
 
+func (ui *UI) Run() {
+	ui.win.ShowAndRun()
+}
+
 func main() {
-
-	a := app.New()
-	w := a.NewWindow("Hello")
-
-	hello := widget.NewLabel("Hello Fyne!")
-	w.SetContent(widget.NewVBox(
-		hello,
-		widget.NewButton("Hi!", func() {
-			hello.SetText("Welcome :)")
-		}),
-	))
-
-	w.ShowAndRun()
+	ui := NewUI(testData)
+	ui.Run()
 }
