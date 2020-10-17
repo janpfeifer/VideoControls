@@ -7,4 +7,4 @@ Simple UI with controls for webcams in Linux.
 Very simple but gets the job done :)
 
 
-![Screenshot](https://github.com/janpfeifer/VideoControls/VideoControls.png?raw=true)
+![Screenshot](https://raw.githubusercontent.com/janpfeifer/VideoControls/main/VideoControls.png)
