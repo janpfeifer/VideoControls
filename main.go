@@ -118,9 +118,13 @@ func makeDeviceLayout(dev *Device) (fyne.Widget, error) {
 
 func makeControlLayout(dev *Device, id webcam.ControlID, control webcam.Control) (fyne.CanvasObject, error) {
 	numChoices := control.Max - control.Min + 1
-	currentValue, err := dev.webcam.GetControl(id)
-	if err != nil {
-		return nil, fmt.Errorf("failed to set control %q (id=%d): %v", control.Name, id, err)
+	currentValue := control.Min
+	if dev.webcam != nil {  // For --test_ui webcam is not set.
+		var err error
+		currentValue, err = dev.webcam.GetControl(id)
+		if err != nil {
+			return nil, fmt.Errorf("failed to set control %q (id=%d): %v", control.Name, id, err)
+		}
 	}
 	if numChoices == 2 {
 		// Boolean checkbox.
@@ -215,11 +219,16 @@ func (ui *UI) Run() {
 }
 
 func main() {
+	flag.Parse()
+
 	var devices []*Device
 	if *uiTestFlag {
 		devices = testData
 	} else {
 		devices = populateDevices()
+		if len(devices) == 0 {
+			log.Fatalf("No devices found.")
+		}
 	}
 	defer closeDevices(devices)
 
