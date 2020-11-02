@@ -11,7 +11,7 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/blackjack/webcam"
+	"github.com/janpfeifer/webcam"
 )
 
 var uiTestFlag = flag.Bool("test_ui", false, "Fill UI with test values, used for UI development.")
